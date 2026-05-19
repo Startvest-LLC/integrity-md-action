@@ -12,14 +12,30 @@ permissions:
 jobs:
   run-on-fixture:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: silver
+            path: fixtures/silver
+            expect_tier: silver
+            expect_exit: '0'
+          - name: bronze
+            path: fixtures/bronze
+            expect_tier: bronze
+            expect_exit: '0'
+          - name: fail
+            path: fixtures/fail
+            expect_tier: fail
+            expect_exit: '1'
+    name: ${{ matrix.name }}
     steps:
       - uses: actions/checkout@v4
       - name: Run action against fixture
         id: integrity
         uses: ./
         with:
-          path: fixtures/pass
-          strict: 'false'
+          path: ${{ matrix.path }}
         continue-on-error: true
       - name: Show outputs
         env:
@@ -30,22 +46,27 @@ jobs:
           TIER: ${{ steps.integrity.outputs.tier }}
           BADGE_JSON: ${{ steps.integrity.outputs.badge-json }}
         run: |
+          echo "fixture: ${{ matrix.name }}"
           echo "exit-code: $EXIT_CODE"
           echo "critical-count: $CRIT"
           echo "high-count: $HIGH"
           echo "base-version: $BASE"
           echo "tier: $TIER"
           echo "badge-json: $BADGE_JSON"
-      - name: Assert fixture passed
+      - name: Assert tier and exit code
         env:
           EXIT_CODE: ${{ steps.integrity.outputs.exit-code }}
-          CRIT: ${{ steps.integrity.outputs.critical-count }}
+          TIER: ${{ steps.integrity.outputs.tier }}
+          EXPECT_EXIT: ${{ matrix.expect_exit }}
+          EXPECT_TIER: ${{ matrix.expect_tier }}
         run: |
-          if [ "$EXIT_CODE" != "0" ]; then
-            echo "Fixture should produce CLI exit 0; got $EXIT_CODE"
-            exit 1
+          fail=0
+          if [ "$EXIT_CODE" != "$EXPECT_EXIT" ]; then
+            echo "::error::exit-code mismatch: expected $EXPECT_EXIT, got $EXIT_CODE"
+            fail=1
           fi
-          if [ "$CRIT" != "0" ]; then
-            echo "Fixture should produce 0 CRITICAL findings; got $CRIT"
-            exit 1
+          if [ "$TIER" != "$EXPECT_TIER" ]; then
+            echo "::error::tier mismatch: expected $EXPECT_TIER, got $TIER"
+            fail=1
           fi
+          exit $fail

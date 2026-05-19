@@ -4,7 +4,7 @@ A composite GitHub Action that validates an `integrity.md` against the
 [TIF (The Integrity Framework)](https://theintegrityframework.org) base
 manifest and any per-product audit rules in `audits/rules/*.json`.
 
-Wraps [`@startvest/integrity-cli`](https://www.npmjs.com/package/@startvest/integrity-cli).
+Wraps [`startvest-integrity-cli`](https://github.com/Startvest-LLC/startvest-integrity-cli). Installs the CLI from a git tag at action runtime — no npm publish step needed.
 
 ## Usage
 
@@ -28,7 +28,7 @@ jobs:
 | Name | Default | Description |
 | --- | --- | --- |
 | `path` | `.` | Repo root containing `integrity.md` (and optional `audits/rules/*.json`). |
-| `cli-version` | `1.3.0` | Version of `@startvest/integrity-cli` to run. Pin in CI. |
+| `cli-version` | `1.3.0` | CLI version (must match a git tag on the CLI repo, without the `v` prefix). Pin in CI. |
 | `strict` | `false` | Fail on HIGH findings (CLI exit 2), not just CRITICAL. |
 | `node-version` | `20` | Node version to install. CLI requires >= 20. |
 | `badge-output` | _(empty)_ | Path (relative to `path`) to write a shields.io endpoint JSON. Empty = skip. |

@@ -11,7 +11,7 @@ inputs:
     required: false
     default: '.'
   cli-version:
-    description: 'Version of @startvest/integrity-cli to run. Pin to a specific version in CI; "latest" is convenient but risks drift.'
+    description: 'CLI version to install (matches a git tag on Startvest-LLC/startvest-integrity-cli, without the "v" prefix). Pin to a specific version in CI.'
     required: false
     default: '1.3.0'
   strict:
@@ -81,7 +81,7 @@ runs:
         if [ "${{ inputs.strict }}" = "true" ]; then
           STRICT_FLAG="--strict"
         fi
-        npx --yes "@startvest/integrity-cli@${{ inputs.cli-version }}" check "${{ inputs.path }}" --format=json $STRICT_FLAG > "$RESULTS_PATH"
+        npx --yes "github:Startvest-LLC/startvest-integrity-cli#v${{ inputs.cli-version }}" check "${{ inputs.path }}" --format=json $STRICT_FLAG > "$RESULTS_PATH"
         EXIT_CODE=$?
         echo "exit-code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
         echo "results-path=$RESULTS_PATH" >> "$GITHUB_OUTPUT"

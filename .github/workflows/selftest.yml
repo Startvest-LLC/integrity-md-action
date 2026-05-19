@@ -1,0 +1,31 @@
+name: selftest
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  run-on-fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run action against fixture
+        id: integrity
+        uses: ./
+        with:
+          path: fixtures/pass
+          strict: 'false'
+        continue-on-error: true
+      - name: Show outputs
+        run: |
+          echo "exit-code: ${{ steps.integrity.outputs.exit-code }}"
+          echo "critical-count: ${{ steps.integrity.outputs.critical-count }}"
+          echo "high-count: ${{ steps.integrity.outputs.high-count }}"
+          echo "base-version: ${{ steps.integrity.outputs.base-version }}"
+          echo "tier: ${{ steps.integrity.outputs.tier }}"
+          echo "badge-json: ${{ steps.integrity.outputs.badge-json }}"

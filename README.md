@@ -120,14 +120,20 @@ to a PR comment, etc.).
 
 ### Tier mapping
 
+The `tier` output is read directly from the CLI's JSON (`v1.4.0+`). The
+Action does not reimplement the mapping — it forwards what the CLI
+reports and renders a badge with metal-colored shields.
+
 | `tier` output | Condition | Badge text |
 | --- | --- | --- |
-| `bronze` | No CRITICAL or HIGH findings | `Bronze` |
-| `bronze-warn` | HIGH findings but no CRITICAL | `Bronze (warnings)` |
+| `silver` | No CRITICAL and no HIGH findings (CLI-green path) | `Silver` |
+| `bronze` | No CRITICAL but one or more HIGH findings | `Bronze` |
 | `fail` | One or more CRITICAL findings | `needs work` |
 
-Silver-tier promotion is not computed by the Action — it lives in the
-[TIF directory](https://theintegrityframework.org/listings) workflow.
+The directory's other Silver path — a public methodology page with
+`Version` + `Changelog` headings — is not computed by the CLI or by
+this Action. It lives in the [TIF directory](https://theintegrityframework.org/listings)
+workflow.
 
 ## Versioning
 

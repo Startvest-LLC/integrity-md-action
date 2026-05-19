@@ -107,10 +107,16 @@ to a PR comment, etc.).
 ```yaml
 - uses: Startvest-LLC/integrity-md-action@v1
   id: integrity
-- run: |
-    echo "Tier: ${{ steps.integrity.outputs.tier }}"
-    echo "Shields JSON: ${{ steps.integrity.outputs.badge-json }}"
+- env:
+    TIER: ${{ steps.integrity.outputs.tier }}
+    BADGE_JSON: ${{ steps.integrity.outputs.badge-json }}
+  run: |
+    echo "Tier: $TIER"
+    echo "Shields JSON: $BADGE_JSON"
 ```
+
+> Inject outputs through `env:` rather than inline `${{ ... }}` substitution.
+> Badge messages can contain shell metacharacters (e.g. `Bronze (warnings)`).
 
 ### Tier mapping
 

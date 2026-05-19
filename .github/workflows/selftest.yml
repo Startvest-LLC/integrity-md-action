@@ -22,10 +22,30 @@ jobs:
           strict: 'false'
         continue-on-error: true
       - name: Show outputs
+        env:
+          EXIT_CODE: ${{ steps.integrity.outputs.exit-code }}
+          CRIT: ${{ steps.integrity.outputs.critical-count }}
+          HIGH: ${{ steps.integrity.outputs.high-count }}
+          BASE: ${{ steps.integrity.outputs.base-version }}
+          TIER: ${{ steps.integrity.outputs.tier }}
+          BADGE_JSON: ${{ steps.integrity.outputs.badge-json }}
         run: |
-          echo "exit-code: ${{ steps.integrity.outputs.exit-code }}"
-          echo "critical-count: ${{ steps.integrity.outputs.critical-count }}"
-          echo "high-count: ${{ steps.integrity.outputs.high-count }}"
-          echo "base-version: ${{ steps.integrity.outputs.base-version }}"
-          echo "tier: ${{ steps.integrity.outputs.tier }}"
-          echo "badge-json: ${{ steps.integrity.outputs.badge-json }}"
+          echo "exit-code: $EXIT_CODE"
+          echo "critical-count: $CRIT"
+          echo "high-count: $HIGH"
+          echo "base-version: $BASE"
+          echo "tier: $TIER"
+          echo "badge-json: $BADGE_JSON"
+      - name: Assert fixture passed
+        env:
+          EXIT_CODE: ${{ steps.integrity.outputs.exit-code }}
+          CRIT: ${{ steps.integrity.outputs.critical-count }}
+        run: |
+          if [ "$EXIT_CODE" != "0" ]; then
+            echo "Fixture should produce CLI exit 0; got $EXIT_CODE"
+            exit 1
+          fi
+          if [ "$CRIT" != "0" ]; then
+            echo "Fixture should produce 0 CRITICAL findings; got $CRIT"
+            exit 1
+          fi
